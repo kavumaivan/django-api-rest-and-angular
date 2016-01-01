@@ -13,6 +13,8 @@ class UserList(generics.ListAPIView):
         permissions.AllowAny
     ]
 
+    def get_queryset(self):
+        return User.objects.all()
 
 class UserDetail(generics.RetrieveAPIView):
     model = User
@@ -23,6 +25,7 @@ class UserDetail(generics.RetrieveAPIView):
 class PostMixin(object):
     model = Post
     serializer_class = PostSerializer
+
     permission_classes = [
         PostAuthorCanEditPermission
     ]
@@ -32,10 +35,12 @@ class PostMixin(object):
         obj.author = self.request.user
         return super(PostMixin, self).pre_save(obj)
 
+    def get_queryset(self):
+        return Post.objects.all()
+
 
 class PostList(PostMixin, generics.ListCreateAPIView):
     pass
-
 
 class PostDetail(PostMixin, generics.RetrieveUpdateDestroyAPIView):
     pass
@@ -57,6 +62,8 @@ class PhotoList(generics.ListCreateAPIView):
         permissions.AllowAny
     ]
 
+    def get_queryset(self):
+        return Photo.objects.all()
 
 class PhotoDetail(generics.RetrieveUpdateDestroyAPIView):
     model = Photo
@@ -71,5 +78,6 @@ class PostPhotoList(generics.ListAPIView):
     serializer_class = PhotoSerializer
 
     def get_queryset(self):
-        queryset = super(PostPhotoList, self).get_queryset()
-        return queryset.filter(post__pk=self.kwargs.get('pk'))
+        return Photo.objects.all()
+        # queryset = super(PostPhotoList, self).get_queryset()
+        # return queryset.filter(post__pk=self.kwargs.get('pk'))
